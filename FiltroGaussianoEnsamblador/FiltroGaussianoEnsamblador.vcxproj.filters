@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\AC\Fase II\nvog1\ac-fase2\ACFASEII\FiltroGaussianoEnsamblador\FiltroGaussianoEnsamblador.cpp">
+    <ClCompile Include="FiltroGaussianoEnsamblador.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
