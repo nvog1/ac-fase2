@@ -54,15 +54,7 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
     }
 }*/
 
-float calcularC(int tamanyo_mascara, int** mascara) {
-    float suma = 0;
-    for (unsigned i = 0; i < tamanyo_mascara; i++) {
-        for (unsigned j = 0; j < tamanyo_mascara; j++) {
-            suma += mascara[i][j];
-        }
-    }
-    return suma;
-}
+
 
 
 int calcularCensamblador(int tam_mascara, int** mascara_filtro) {
@@ -138,9 +130,7 @@ int main()
         cout << endl;
     }*/
 
-    if (calcularC(tamanyo_mascara, mascara_filtro) == calcularCensamblador(tamanyo_mascara, mascara_filtro)) {
-        cout << "Las funciones de calcularC funcionan las 2, de locos " << endl;
-    }
+   
 
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
