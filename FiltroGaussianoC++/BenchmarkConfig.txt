@@ -1,2 +1,0 @@
-Tamaño máscara: 5
-Desviación típica: 1.0
