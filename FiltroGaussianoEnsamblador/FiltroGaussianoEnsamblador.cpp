@@ -65,48 +65,7 @@ float calcularC(int tamanyo_mascara, int** mascara) {
 }
 
 
-int calcularCensamblador(int tam_mascara, int** mascara_filtro) {
-    int variable = 0;
 
-    __asm {
-    inicializar:
-        mov edx, tam_mascara;
-        mov ecx, 0;
-        mov esi, 0;
-        mov ebx, 0;
-        mov eax, 0;
-
-    bucle_i:
-        cmp ecx, edx;
-        jae bucle_j;
-
-        cmp esi, edx;
-        jae terminar;
-
-
-
-        mov ebx, [mascara_filtro];
-        mov ebx, [ebx + esi * 4];
-        mov ebx, [ebx + ecx * 4];
-
-        add eax, ebx;
-        inc ecx;
-
-
-        jmp bucle_i;
-
-
-    bucle_j:
-        inc esi;
-        mov ecx, 0;
-
-        jmp bucle_i;
-
-    terminar:
-        mov variable, eax;
-    }
-    return variable;
-}
 
 int main()
 {
