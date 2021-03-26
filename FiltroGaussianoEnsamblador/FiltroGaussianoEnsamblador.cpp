@@ -10,7 +10,7 @@
 using namespace std;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
-    ifstream ficheroLec("BenchmarkConfig.txt");
+    ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
     int contador = 1;
     if (ficheroLec.is_open()) {
