@@ -21,6 +21,9 @@
   <ItemGroup>
     <ClCompile Include="FiltroGaussiano.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="BenchmarkConfig.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
