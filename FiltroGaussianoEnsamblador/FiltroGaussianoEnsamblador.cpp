@@ -57,7 +57,7 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
 
 
 
-int calcularCensamblador(int tam_mascara, int** mascara_filtro) {
+int calcularC(int tam_mascara, int** mascara_filtro) {
     int variable = 0;
 
     __asm {
