@@ -64,7 +64,19 @@ float calcularC(int tamanyo_mascara, int** mascara) {
     return suma;
 }
 
+void rellenarMatriz(int** matriz,int tamanyo_mascara) {
+    //rellenamos la matriz de su puta madre con valores para probar
 
+    for (int i = 0; i < tamanyo_mascara; i++) {
+        matriz[i] = new int[tamanyo_mascara];
+    }
+
+    for (int i = 0; i < tamanyo_mascara; i++) {
+        for (int j = 0; j < tamanyo_mascara; j++) {
+            matriz[i][j] = -1;
+        }
+    }
+}
 
 
 int main()
@@ -77,17 +89,11 @@ int main()
     cout << tamanyo_mascara << " " << desviacion_tipica << endl;
 
     int** mascara_filtro = new int* [tamanyo_mascara];
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        mascara_filtro[i] = new int[tamanyo_mascara];
-    }
+    int** imagen_filtrada = new int* [tamanyo_mascara];
+    rellenarMatriz(mascara_filtro,tamanyo_mascara);
+    rellenarMatriz(imagen_filtrada, tamanyo_mascara);
 
-    //rellenamos la matriz de su puta madre con valores para probar
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            mascara_filtro[i][j] = i + j;
 
-        }
-    }
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
@@ -101,7 +107,7 @@ int main()
 
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
-
+    cout << c << endl;
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
