@@ -32,6 +32,58 @@ void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
 
 void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascara) {
 
+    __asm {
+
+    incializar:
+        mov ecx, 0;
+        mov esi, 0;
+        mov eax, 0;
+        mov edx, 0;
+        mov ebx, 0;
+
+    buclei:
+        cmp ecx, tamanyo_mascara;
+        jae buclej;
+        cmp esi, tamanyo_mascara;
+        jae terminar;
+
+
+        inc eax;
+
+    compi:
+        cmp ecx, 0;
+        jbe compj;
+
+    inci:
+
+        //Falta la division y la llamada a la otra función
+
+        mov ebx, [mascara];
+        mov ebx, [ebx + esi * 4];
+        mov[ebx + ecx * 4], eax;
+
+        inc ecx;
+        jmp buclei;
+
+    compj:
+        cmp esi, 0;
+        jbe asignar;
+        jmp inci;
+
+    buclej:
+        mov ecx, 0;
+        inc esi;
+        jmp buclei;
+
+    asignar:
+        mov edx, 10;
+        jmp inci;
+
+    terminar:
+
+
+    }
+
 }
 
 /*
@@ -117,7 +169,7 @@ int main()
     //rellenamos la matriz de su puta madre con valores para probar
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
-            mascara_filtro[i][j] = i + j;
+            mascara_filtro[i][j] = 0;
 
         }
     }
