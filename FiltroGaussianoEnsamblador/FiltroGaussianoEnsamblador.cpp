@@ -30,61 +30,8 @@ void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     }
 }
 
-void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascara) {
-
-    __asm {
-
-    incializar:
-        mov ecx, 0;
-        mov esi, 0;
-        mov eax, 0;
-        mov edx, 0;
-        mov ebx, 0;
-
-    buclei:
-        cmp ecx, tamanyo_mascara;
-        jae buclej;
-        cmp esi, tamanyo_mascara;
-        jae terminar;
 
 
-        inc eax;
-
-    compi:
-        cmp ecx, 0;
-        jbe compj;
-
-    inci:
-
-        //Falta la division y la llamada a la otra función
-
-        mov ebx, [mascara];
-        mov ebx, [ebx + esi * 4];
-        mov[ebx + ecx * 4], eax;
-
-        inc ecx;
-        jmp buclei;
-
-    compj:
-        cmp esi, 0;
-        jbe asignar;
-        jmp inci;
-
-    buclej:
-        mov ecx, 0;
-        inc esi;
-        jmp buclei;
-
-    asignar:
-        mov edx, 10;
-        jmp inci;
-
-    terminar:
-
-
-    }
-
-}
 
 
 float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int j) {
@@ -151,6 +98,86 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
 }
 
 
+void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascara) {
+
+
+    float coef_maspequenyo;
+    int coeficiente;
+    int i = 0;
+    int j = 0;
+    float expon;
+
+    __asm {
+
+    incializar:
+        mov ecx, 0;
+        mov esi, 0;
+        mov eax, 0;
+        mov edx, 0;
+        mov ebx, 0;
+
+    buclei:
+        mov esi, j;
+        mov ecx, i;
+        cmp ecx, tamanyo_mascara;
+        jae buclej;
+        cmp esi, tamanyo_mascara;
+        jae terminar;
+
+    }
+    expon = calcularExponente(desviacion_tipica, tamanyo_mascara, i, j);
+    __asm {
+    compi:
+        mov ecx, i;
+        cmp ecx, 0;
+        jbe compj;
+    inci:
+
+        mov ebx, 0;
+        fld[coef_maspequenyo];
+        fld[expon];
+        fdiv st(0), st(1);
+        fisttp coeficiente;
+        FFREE st(1);
+        FFREE st(2);
+        FFREE st(3);
+        FFREE st(4);
+        FFREE st(5);
+        mov eax, coeficiente;
+        mov esi, j;
+        mov ecx, i;
+        mov ebx, [mascara];
+        mov ebx, [ebx + esi * 4];
+        mov[ebx + ecx * 4], eax;
+
+        inc i;
+
+        jmp buclei;
+
+    compj:
+        mov esi, j
+            cmp esi, 0;
+        jbe asignar;
+        jmp inci;
+
+    buclej:
+        mov i, 0;
+        inc j;
+        jmp buclei;
+
+    asignar:
+        mov edx, expon;
+        mov coef_maspequenyo, edx;
+
+        jmp inci;
+
+    terminar:
+
+
+    }
+
+}
+
 
 
 int calcularC(int tam_mascara, int** mascara_filtro) {
@@ -213,24 +240,24 @@ int main()
     //rellenamos la matriz de su puta madre con valores para probar
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
-            mascara_filtro[i][j] = -1;
+            mascara_filtro[i][j] = 0;
 
         }
     }
 
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            cout << calcularExponente(desviacion_tipica, tamanyo_mascara, i, j) << ", ";
-
-        }
-        cout << endl;
-    }
 
    
 
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
-
+    for (int i = 0; i < tamanyo_mascara; i++) {
+        for (int j = 0; j < tamanyo_mascara; j++) {
+            cout << mascara_filtro[i][j] << " ";
+            
+        }
+        cout << endl;
+    }
+    cout << c;
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
