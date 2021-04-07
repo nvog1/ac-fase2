@@ -96,29 +96,32 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
     _asm {
         mov eax, [i]
         mov ebx, [i]
-        mul ebx// eax = eax*ebx
-        mov[i_c], eax
+        mul ebx //eax = eax*ebx | eax = i^2
+        mov[i_c], eax //i_c = i^2
         mov eax, [j]
         mov ebx, [j]
-        mul ebx//eax = eax * ebx --> j^2
-        mov[j_c], eax
-        fld[desviacion_tipica]
-        fmul st(0), st(0)//st(0)--> desviacion
-        fld[mult]//cargamos 2.0 st(0)
-        fmul st(0), st(1)//2*desviación típica^2
-        add eax,[i_c] // eax+= i_c
-        add eax,[j_c]// eax += j_c
-        mov [suma], eax //movemos la eax a la suma
-          //al introducir el flotante de j_c va para abajo 2*desviación típica^2 es decir st(1)
-        fild [suma]
-        fdiv st(0),st(1)
-        fild [sign]
-        fmul st(0),st(1)//cambiamos el signo
-        fst[resultado]//guardamos resultado
-        fstp st(0)
-        fstp st(1)
-        fstp st(2)
-        fstp st(3)
+        mul ebx //eax = eax * ebx --> j^2
+        mov[j_c], eax //j_c = j^2
+        fld[desviacion_tipica] //st(0) = desviacion_tipica
+        fmul st(0), st(0) //st(0) = desviacion_tipica^2
+        fld[mult] //cargamos 2.0 en st(0) | st(1) = desviacion_tipica^2
+        fmul st(0), st(1) //st(0) = 2*desviación_típica^2 | st(1) = desviacion_tipica^2
+        //sumamos j_c + i_c
+        mov eax,[i_c] //eax = i_c
+        mov ebx,[j_c] //ebx = j_c
+        add ebx //eax = i_c + j_c
+        mov [suma], eax //suma = eax
+        //metemos suma en la pila
+        fild [suma] //st(0) = suma | st(1) = 2*desviacion_tipica^2 | st(2) = desviacion_tipica^2
+        fdiv st(0),st(1) //st(0) = suma/2*desviacion_tipica^2 | st(1) = 2*desviacion_tipica^2 | st(2) = desviacion_tipica^2
+        //cargamos -1 para cambiar el signo
+        fild [sign] //st(0) = -1.0 | st(1) = suma/2*desviacion_tipica^2 | st(2) = 2*desviacion_tipica^2 | st(3) = desviacion_tipica^2
+        fmul st(0),st(1) //st(0) = -1 * suma/2*desviacion_tipica^2 | st(1) = suma/2*desviacion_tipica^2 | st(2) = 2*desviacion_tipica^2 | st(3) = desviacion_tipica^2
+        fst[resultado] //guardamos resultado
+        fstp st(0) //st(0) = suma / 2 * desviacion_tipica ^ 2 | st(1) = 2 * desviacion_tipica ^ 2 | st(2) = desviacion_tipica ^ 2
+        fstp st(1) //st(0) = 2 * desviacion_tipica ^ 2 | st(1) = desviacion_tipica ^ 2
+        fstp st(2) //st(0) = desviacion_tipica ^ 2
+        fstp st(3) //stack vacío
         
       
 
