@@ -86,9 +86,13 @@ void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascar
 
 }
 
-/*
-float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int j) {
 
+float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int j) {
+    int i_c, j_c;
+    float mult = 2.0;
+    int suma = 0;
+    int sign = -1;
+    float resultado;
     _asm {
         mov eax, [i]
         mov ebx, [i]
@@ -100,11 +104,28 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
         mov[j_c], eax
         fld[desviacion_tipica]
         fmul st(0), st(0)//st(0)--> desviacion
-        fld[mult]//cargamos 2.0
+        fld[mult]//cargamos 2.0 st(0)
         fmul st(0), st(1)//2*desviación típica^2
-        flid[j_c]// como convertir a flotante
+        add eax,[i_c] // eax+= i_c
+        add eax,[j_c]// eax += j_c
+        mov [suma], eax //movemos la eax a la suma
+          //al introducir el flotante de j_c va para abajo 2*desviación típica^2 es decir st(1)
+        fild [suma]
+        fdiv st(0),st(1)
+        fild [sign]
+        fmul st(0),st(1)//cambiamos el signo
+        fst[resultado]//guardamos resultado
+        fstp st(0)
+        fstp st(1)
+        fstp st(2)
+        fstp st(3)
+        
+      
+
     }
-}*/
+  
+    return resultado;
+}
 
 
 
@@ -169,18 +190,18 @@ int main()
     //rellenamos la matriz de su puta madre con valores para probar
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
-            mascara_filtro[i][j] = 0;
+            mascara_filtro[i][j] = -1;
 
         }
     }
-/*
+
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
             cout << calcularExponente(desviacion_tipica, tamanyo_mascara, i, j) << ", ";
 
         }
         cout << endl;
-    }*/
+    }
 
    
 
