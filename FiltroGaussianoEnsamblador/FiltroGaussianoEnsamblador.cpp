@@ -92,8 +92,7 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
     float mult = 2.0;
     int suma = 0;
     int divisor = 2;
-    unsigned ui = (unsigned)i;
-    unsigned uj = (unsigned)j;
+    
     int sign = -1;
     float resultado;
     _asm {
@@ -101,9 +100,9 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
         mov eax, [tamanyo_mascara]
         sub eax, 1 // eax = tamanyo_mascara - 1
         mov ebx, [divisor]
-        //mov edx, 2
+        xor edx,edx
         div ebx // eax = (tamanyo_mascara - 1) / 2 (división entera), edx = resto de la división
-        add eax, edx //eax = (tamanyo_mascara-1)/2 en float(creo)
+        //add eax, edx //eax = (tamanyo_mascara-1)/2 en float(creo)
         mov ebx, eax //ebx = (tamanyo_mascara-1)/2 en float(creo)
         
         mov eax, [i] //eax = i
@@ -112,7 +111,7 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
 
         mov eax, [j] //eax = j
         sub eax, ebx //eax = j - (tamanyo_mascara-1)/2
-        mov [i], eax //j = j - (tamanyo_mascara-1)/2
+        mov [j], eax //j = j - (tamanyo_mascara-1)/2
 
 
         mov eax, [i]
