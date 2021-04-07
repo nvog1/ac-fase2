@@ -36,6 +36,7 @@ void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
 
 
 float calcularExponente(int tamanyo_mascara, float desviacion_tipica, int i, int j) {
+
     float exponente = -(pow(i - ((tamanyo_mascara - 1) / 2),2)+pow(j - ((tamanyo_mascara - 1) / 2),2))/(2*pow(desviacion_tipica,2));
     return exponente;
     
@@ -89,21 +90,15 @@ int main()
     cout << tamanyo_mascara << " " << desviacion_tipica << endl;
 
     int** mascara_filtro = new int* [tamanyo_mascara];
-    int** imagen_filtrada = new int* [tamanyo_mascara];
     rellenarMatriz(mascara_filtro,tamanyo_mascara);
-    rellenarMatriz(imagen_filtrada, tamanyo_mascara);
-
-
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
-            cout << calcularExponente(desviacion_tipica,tamanyo_mascara, i, j) << ", ";
+            cout << calcularExponente(tamanyo_mascara, desviacion_tipica, i, j) << ", ";
 
         }
         cout << endl;
     }
-
-   
 
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
