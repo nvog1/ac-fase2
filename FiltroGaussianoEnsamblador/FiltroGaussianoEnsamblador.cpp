@@ -8,7 +8,7 @@
 #include <fstream>
 
 using namespace std;
-
+const float e = 2.71828182;
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
@@ -125,7 +125,7 @@ void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascar
         jae terminar;
 
     }
-    expon = calcularExponente(desviacion_tipica, tamanyo_mascara, i, j);
+    expon = pow(e, calcularExponente(desviacion_tipica, tamanyo_mascara, i, j));
     __asm {
     compi:
         mov ecx, i;
