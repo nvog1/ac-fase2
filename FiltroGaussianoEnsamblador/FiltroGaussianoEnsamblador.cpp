@@ -91,9 +91,30 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
     int i_c, j_c;
     float mult = 2.0;
     int suma = 0;
+    int divisor = 2;
+    unsigned ui = (unsigned)i;
+    unsigned uj = (unsigned)j;
     int sign = -1;
     float resultado;
     _asm {
+        //i = i - (tamanyo_mascara-1)/2, j = j - (tamanyo_mascara-1)/2
+        mov eax, [tamanyo_mascara]
+        sub eax, 1 // eax = tamanyo_mascara - 1
+        mov ebx, [divisor]
+        //mov edx, 2
+        div ebx // eax = (tamanyo_mascara - 1) / 2 (división entera), edx = resto de la división
+        add eax, edx //eax = (tamanyo_mascara-1)/2 en float(creo)
+        mov ebx, eax //ebx = (tamanyo_mascara-1)/2 en float(creo)
+        
+        mov eax, [i] //eax = i
+        sub eax, ebx //eax = i - (tamanyo_mascara-1)/2
+        mov [i], eax //i = i - (tamanyo_mascara-1)/2
+
+        mov eax, [j] //eax = j
+        sub eax, ebx //eax = j - (tamanyo_mascara-1)/2
+        mov [i], eax //j = j - (tamanyo_mascara-1)/2
+
+
         mov eax, [i]
         mov ebx, [i]
         mul ebx //eax = eax*ebx | eax = i^2
@@ -109,7 +130,7 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
         //sumamos j_c + i_c
         mov eax,[i_c] //eax = i_c
         mov ebx,[j_c] //ebx = j_c
-        add ebx //eax = i_c + j_c
+        add eax, ebx //eax = i_c + j_c
         mov [suma], eax //suma = eax
         //metemos suma en la pila
         fild [suma] //st(0) = suma | st(1) = 2*desviacion_tipica^2 | st(2) = desviacion_tipica^2
