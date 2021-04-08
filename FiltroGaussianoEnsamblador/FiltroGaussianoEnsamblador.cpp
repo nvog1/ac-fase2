@@ -9,6 +9,7 @@
 
 using namespace std;
 const float e = 2.71828182;
+const int tamanyo_imagen = 100;
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
@@ -221,6 +222,38 @@ int calcularC(int tam_mascara, int** mascara_filtro) {
         mov variable, eax;
     }
     return variable;
+}
+
+void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+    int suma = 0;
+    int producto_izq;
+    int producto_dch;
+    int i;
+    int j;
+    int lim;
+    int lim1;//limite bucle de c y k
+    int ini;//inicializador del bucle
+    _asm
+    {
+        mov esi, [tamanyo_mascara]//movemos el tamaño de la mascará
+        dec esi//esi = tamanyo_mascara-1
+        mov [lim1], esi//lim1 = tamayo_mascara-1
+        mov ecx, [tamanyo_imagen]//cargamos en ecx tamaño imagen
+        dec ecx //tamanyo_imagen - 1
+        sub eax,ecx //eax = (tamanyo_imagen-1 - tamanyo_mascara -1) / 2
+        xor edx,edx
+        mov ebx, 2//movemos el divisor
+        div ebx//dividimoos eax = eax/2
+        mov [lim], eax //movemos lim = (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2
+        mov eax, ecx //eax = tamanyo_mascar
+        xor edx,edx
+        div ebx
+        mov [ini],eax //ini= tamanyo_mascara-1 / 2
+
+        mov [i],eax //inicializamos el iterador i
+       
+
+    }
 }
 
 int main()
