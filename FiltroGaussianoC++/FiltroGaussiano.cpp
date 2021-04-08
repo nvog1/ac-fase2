@@ -11,6 +11,7 @@
 using namespace std;
 
 const float e = 2.71828182;
+const int tamanyo_imagen = 100;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig.txt");
@@ -79,12 +80,32 @@ void rellenarMatriz(int** matriz,int tamanyo_mascara) {
     }
 }
 
+void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+    int suma = 0;
+    int producto_izq;
+    int producto_dch;
+    for (int i = (tamanyo_mascara - 1) / 2; i < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; i++) {
+        for (int j = (tamanyo_mascara - 1) / 2; j < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; j++) {
+            for (int c = 0; c < tamanyo_mascara - 1; c++) {
+                for (int k = 0; k < tamanyo_mascara - 1; k++) {
+
+                    producto_izq = imagen[c - (tamanyo_mascara - 1) / 2][k - (tamanyo_mascara - 1) / 2];
+                    producto_dch = mascara_filtro[c - (tamanyo_mascara - 1) / 2][k - (tamanyo_mascara - 1) / 2];
+
+                    suma += producto_izq * producto_dch;
+                }
+            }
+        }
+    }
+}
+
 
 int main()
 {
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
+    int imagen = 0;
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
     cout << tamanyo_mascara << " " << desviacion_tipica << endl;
