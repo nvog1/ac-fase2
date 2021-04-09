@@ -230,16 +230,18 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
     int producto_dch;
     int i;
     int j;
-    int lim;
+    int c;
+    int k;
+    int lim; //limite del bucle i y j
     int lim1;//limite bucle de c y k
     int ini;//inicializador del bucle
     _asm
     {
-        mov esi, [tamanyo_mascara]//movemos el tamaño de la mascará
-        dec esi//esi = tamanyo_mascara-1
-        mov [lim1], esi//lim1 = tamayo_mascara-1
-        mov ecx, [tamanyo_imagen]//cargamos en ecx tamaño imagen
-        dec ecx //tamanyo_imagen - 1
+        mov ecx, [tamanyo_mascara]//movemos el tamaño de la mascará
+        dec ecx//ecx = tamanyo_mascara-1
+        mov [lim1], ecx//lim1 = tamayo_mascara-1
+        mov eax, [tamanyo_imagen]//cargamos en ecx tamaño imagen
+        dec eax //tamanyo_imagen - 1
         sub eax,ecx //eax = (tamanyo_imagen-1 - tamanyo_mascara -1) / 2
         xor edx,edx
         mov ebx, 2//movemos el divisor
@@ -251,6 +253,49 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
         mov [ini],eax //ini= tamanyo_mascara-1 / 2
 
         mov [i],eax //inicializamos el iterador i
+
+ bucle1:      
+        mov ebx, [i]
+        mov ecx, [lim]//límite del bulce
+
+        cmp ecx,ebx //comprobamos si se llega al final del bulce
+        je fin
+        mov eax,[ini]//
+        mov [j], eax // j = (tamanyo_mascara-1) / 2
+        jmp bucle2 // si no hemos llegado al final del bucle 
+
+
+
+ bucle2:
+        cmp [j],ecx//comparamos si j < limite
+        je finbucle2 // si son iguales saltamos al bucle1
+        mov [c], 0//inicializamos c = 0
+        mov edx,[lim1]//el limite de los dos bucles internos
+        jmp bucle3 //empezamos el bucle 3
+ bucle3:
+        cmp [c],edx //miramos si hemos llegado al final del bucle
+        je finbucle3
+        inc [c] //incrementamos el índice de c
+        mov [k],0
+        jmp bucle4
+
+ bucle4:
+        cmp[k],edx
+        je finbucle4
+        inc [k]//incrementamos el índice de k++
+        jmp bucle4
+
+ finbucle4:
+        inc [c]
+        jmp bucle3
+ finbucle3:
+        inc [j]//incrementaamos el iterador
+        jmp bucle2
+ finbucle2:
+        inc[i]//incrementamos el índice i
+        jmp bucle1 //volvemos a iterar
+         
+  fin:
        
 
     }
@@ -261,6 +306,7 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
+    int** imagen;
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
     cout << tamanyo_mascara << " " << desviacion_tipica << endl;
@@ -292,6 +338,7 @@ int main()
     }
     cout << c;
 
+    aplicarFiltro(mascara_filtro, tamanyo_mascara, desviacion_tipica, mascara_filtro);
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
     }
