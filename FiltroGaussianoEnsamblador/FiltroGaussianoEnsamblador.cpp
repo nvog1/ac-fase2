@@ -282,8 +282,24 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
  bucle4:
         cmp[k],edx
         je finbucle4
+        mov ecx,[c]//cargamos c
+        mov esi,[k]//cargamos k
+        //mov eax,[ini]//cargamos (tamanyo-1)/2
+        /**
+        sub ecx,[ini]//calculamos el índice del vector primera dimensión c - tamanyo_mascara -1 /2
+        sub esi,[ini]//calculamos el índice del vector segunda dimensión k - tamanyo_mascara-1 / 2
+        mov ebx, 4
+        imul ecx,ebx//multiplicamos por 4*c
+        add ecx,esi//calculamos posición de memoria
+        mov eax,[imagen+ecx]//sacamos producto_izquierdo
+        mov ebx,[mascara_filtro+ecx]//sacamos producto_derecho
+        mov ecx,[suma]//sacamos el contendio de suma
+        imul eax,ebx//multiplicamos producto izquierdo y producto derecho
+        add ecx,eax //sumamoos suma + producto_izq * producto_dch
+        mov [suma],ecx
+        */
         inc [k]//incrementamos el índice de k++
-        jmp bucle4
+        jmp bucle4//volvemos a iterar
 
  finbucle4:
         inc [c]
@@ -299,6 +315,7 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
        
 
     }
+    
 }
 
 int main()
@@ -339,9 +356,12 @@ int main()
     cout << c;
 
     aplicarFiltro(mascara_filtro, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    cout << "acaba proceso" << endl;
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
     }
 
     delete[] mascara_filtro;
+
+    
 }
