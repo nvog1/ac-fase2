@@ -242,19 +242,19 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
         mov ecx, [tamanyo_mascara]//movemos el tamaño de la mascará
         dec ecx//ecx = tamanyo_mascara-1
         mov [lim1], ecx//lim1 = tamayo_mascara-1
+        mov eax, ecx //eax = tamanyo_mascara-1
+        xor edx, edx
+        mov ebx, 2//movemos el divisor
+        div ebx//dividimoos eax = eax/2
+        mov ecx, eax
         mov eax, [tamanyo_imagen]//cargamos en ecx tamaño imagen
         dec eax //tamanyo_imagen - 1
         sub eax,ecx //eax = (tamanyo_imagen-1 - tamanyo_mascara -1) / 2
-        xor edx,edx
-        mov ebx, 2//movemos el divisor
-        div ebx//dividimoos eax = eax/2
         mov [lim], eax //movemos lim = (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2
-        mov eax, ecx //eax = tamanyo_mascar
-        xor edx,edx
-        div ebx
-        mov [ini],eax //ini= tamanyo_mascara-1 / 2
 
-        mov [i],eax //inicializamos el iterador i
+        mov [ini],ecx //ini= tamanyo_mascara-1 / 2
+
+        mov [i],ecx //inicializamos el iterador i
 
  bucle1:      
         mov ebx, [i]
@@ -276,7 +276,7 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
         mov edi,[ini]
         sub esi,edi
         mov [c], esi//inicializamos c = i -(tamanyo_mascara-1)/2
-        mov [ini1],esi
+        mov [ini1],esi 
         add edi,[i]
         mov edx,edi//el limite de los dos bucles internos
         jmp bucle3 //empezamos el bucle 3
@@ -291,20 +291,27 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
         cmp[k],edx
         je finbucle4
         mov ecx,[c]//cargamos c
-        mov esi,[k]//cargamos k
+        mov ebx,[k]//cargamos k
         //mov eax,[ini]//cargamos (tamanyo-1)/2
         
        
-        mov ebx, 4
-        add ecx, esi//calculamos posición de memoria
-        imul ecx,ebx//multiplicamos por 4*c
-        mov eax,[imagen+ecx]//sacamos producto_izquierdo
+        //mov ebx, 4
+        mov edi, 0
+        add edi,ecx
+        add edi, ebx//calculamos posición de memoria
+        //imul ecx,ebx//multiplicamos por 4*c
+        mov eax,[imagen]//sacamos producto_izquierdo
+        mov eax,[eax + 4 * edi]
        //mov ebx,[mascara_filtro+ecx]//sacamos producto_derecho
-        mov esi,[columnafiltro]
-        add esi,[filafiltro] //sumamos columnaFitlro + filaFiltro
-        imul esi,ebx//multiplicamos por 4 
-        mov esi,[mascara_filtro+esi]//sacamos el elemento
-        imul eax,esi//multiplicamos prod_izq*prod_derecho
+        mov edi,[filafiltro]
+
+        //imul esi,ebx//multiplicamos por 4
+        mov ebx, 0
+        mov ebx,[mascara_filtro+4*edi]//sacamos el elemento
+        mov edi, [columnafiltro] //sumamos columnaFitlro + filaFiltro
+        mov ebx,[ebx + 4*edi]
+        mov ebx, [ebx]
+        imul eax,ebx//multiplicamos prod_izq*prod_derecho
         mov ecx,[suma]//sacamos el contendio de suma
         //imul eax,ebx//multiplicamos producto izquierdo y producto derecho
         add ecx,eax //sumamoos suma + producto_izq * producto_dch
@@ -317,6 +324,7 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
  finbucle4:
         inc [c]
         inc [filafiltro]
+        mov [columnafiltro], 0
         jmp bucle3
  finbucle3:
         mov [filafiltro], 0 
