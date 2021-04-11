@@ -82,19 +82,20 @@ void rellenarMatriz(int** matriz,int tamanyo_mascara) {
 
 void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
-    int producto_izq;
-    int producto_dch;
+    int filaFiltro = 0;
+    int columnaFiltro = 0;
     for (int i = (tamanyo_mascara - 1) / 2; i < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; i++) {
         for (int j = (tamanyo_mascara - 1) / 2; j < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; j++) {
-            for (int c = 0; c < tamanyo_mascara - 1; c++) {
-                for (int k = 0; k < tamanyo_mascara - 1; k++) {
+            for (int c = i - ((tamanyo_mascara - 1) / 2); c < (i + ((tamanyo_mascara - 1) / 2)); c++) {
+                for (int k = i - ((tamanyo_mascara - 1) / 2); k < (i + ((tamanyo_mascara - 1) / 2)) - 1; k++) {
 
-                    producto_izq = imagen[c - (tamanyo_mascara - 1) / 2][k - (tamanyo_mascara - 1) / 2];
-                    producto_dch = mascara_filtro[c - (tamanyo_mascara - 1) / 2][k - (tamanyo_mascara - 1) / 2];
-
-                    suma += producto_izq * producto_dch;
+                    suma += imagen[c][k] * mascara_filtro[filaFiltro][columnaFiltro];
+                    columnaFiltro++;
                 }
+                filaFiltro++;
             }
+            filaFiltro = 0;
+            columnaFiltro = 0;
         }
     }
 }
