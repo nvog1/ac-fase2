@@ -92,6 +92,7 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
                     suma += imagen[c][k] * mascara_filtro[filaFiltro][columnaFiltro];
                     columnaFiltro++;
                 }
+                columnaFiltro = 0;
                 filaFiltro++;
             }
             filaFiltro = 0;

@@ -304,13 +304,12 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
         mov eax,[eax + 4 * edi]
        //mov ebx,[mascara_filtro+ecx]//sacamos producto_derecho
         mov edi,[filafiltro]
-
+        add edi,[columnafiltro]
         //imul esi,ebx//multiplicamos por 4
         mov ebx, 0
-        mov ebx,[mascara_filtro+4*edi]//sacamos el elemento
-        mov edi, [columnafiltro] //sumamos columnaFitlro + filaFiltro
-        mov ebx,[ebx + 4*edi]
-        mov ebx, [ebx]
+        mov ebx,[mascara_filtro]//sacamos el elemento
+        mov ebx,[ebx]
+        mov ebx, [ebx + 4 * edi]
         imul eax,ebx//multiplicamos prod_izq*prod_derecho
         mov ecx,[suma]//sacamos el contendio de suma
         //imul eax,ebx//multiplicamos producto izquierdo y producto derecho
