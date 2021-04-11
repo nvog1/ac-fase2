@@ -235,6 +235,8 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
     int lim; //limite del bucle i y j
     int lim1;//limite bucle de c y k
     int ini;//inicializador del bucle
+    int filafiltro = 0;
+    int columnafiltro = 0;
     _asm
     {
         mov ecx, [tamanyo_mascara]//movemos el tamaño de la mascará
@@ -286,26 +288,34 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
         mov ecx,[c]//cargamos c
         mov esi,[k]//cargamos k
         //mov eax,[ini]//cargamos (tamanyo-1)/2
-        /**
-        sub ecx,[ini]//calculamos el índice del vector primera dimensión c - tamanyo_mascara -1 /2
-        sub esi,[ini]//calculamos el índice del vector segunda dimensión k - tamanyo_mascara-1 / 2
+        
+       
         mov ebx, 4
+        add ecx, esi//calculamos posición de memoria
         imul ecx,ebx//multiplicamos por 4*c
-        add ecx,esi//calculamos posición de memoria
         mov eax,[imagen+ecx]//sacamos producto_izquierdo
-        mov ebx,[mascara_filtro+ecx]//sacamos producto_derecho
+       //mov ebx,[mascara_filtro+ecx]//sacamos producto_derecho
+        mov esi,[columnafiltro]
+        add esi,[filafiltro] //sumamos columnaFitlro + filaFiltro
+        imul esi,ebx//multiplicamos por 4 
+        mov esi,[mascara_filtro+esi]//sacamos el elemento
+        imul eax,esi//multiplicamos prod_izq*prod_derecho
         mov ecx,[suma]//sacamos el contendio de suma
-        imul eax,ebx//multiplicamos producto izquierdo y producto derecho
+        //imul eax,ebx//multiplicamos producto izquierdo y producto derecho
         add ecx,eax //sumamoos suma + producto_izq * producto_dch
         mov [suma],ecx
-        */
+        
         inc [k]//incrementamos el índice de k++
+        inc[columnafiltro]
         jmp bucle4//volvemos a iterar
 
  finbucle4:
         inc [c]
+        inc [filafiltro]
         jmp bucle3
  finbucle3:
+        mov [filafiltro], 0 
+        mov [columnafiltro], 0//dejamos a cero filaFiltro y columna filtro
         inc [j]//incrementaamos el iterador
         jmp bucle2
  finbucle2:
