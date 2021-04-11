@@ -130,7 +130,7 @@ int main()
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
 
-    //aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
 
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {

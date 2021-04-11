@@ -9,7 +9,7 @@
 
 using namespace std;
 const float e = 2.71828182;
-const int tamanyo_imagen = 100;
+const int tamanyo_imagen = 20;
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
@@ -224,7 +224,7 @@ int calcularC(int tam_mascara, int** mascara_filtro) {
     return variable;
 }
 
-void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int producto_izq;
     int producto_dch;
@@ -234,7 +234,7 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
     int k;
     int lim; //limite del bucle i y j
     int lim1;//limite bucle de c y k
-    int ini;//inicializador del bucle
+    int ini,ini1;//inicializador del bucle
     int filafiltro = 0;
     int columnafiltro = 0;
     _asm
@@ -272,14 +272,19 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
         mov ecx, [lim]
         cmp [j],ecx//comparamos si j < limite
         je finbucle2 // si son iguales saltamos al bucle1
-        mov [c], 0//inicializamos c = 0
-        mov edx,[lim1]//el limite de los dos bucles internos
+        mov esi,[i]
+        mov edi,[ini]
+        sub esi,edi
+        mov [c], esi//inicializamos c = i -(tamanyo_mascara-1)/2
+        mov [ini1],esi
+        add edi,[i]
+        mov edx,edi//el limite de los dos bucles internos
         jmp bucle3 //empezamos el bucle 3
  bucle3:
         cmp [c],edx //miramos si hemos llegado al final del bucle
         je finbucle3
-        inc [c] //incrementamos el índice de c
-        mov [k],0
+        mov esi,[ini1]
+        mov [k],esi
         jmp bucle4
 
  bucle4:
@@ -316,6 +321,7 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
  finbucle3:
         mov [filafiltro], 0 
         mov [columnafiltro], 0//dejamos a cero filaFiltro y columna filtro
+        mov [suma], 0//ponemos a 0 la suma
         inc [j]//incrementaamos el iterador
         jmp bucle2
  finbucle2:
@@ -326,48 +332,73 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
        
 
     }
-    
+    cout << endl <<  suma << endl;
 }
+void generarImagenAleatoria(int imagen[tamanyo_imagen][tamanyo_imagen]) {
+    int num;
+    for (int i = 0; i < tamanyo_imagen; i++) {
+        for (int j = 0; j < tamanyo_imagen; j++) {
+            num = rand() % 256;
+            imagen[i][j] = num;
+        }
+    }
+}
+void rellenarMatriz(int** matriz, int tamanyo_mascara) {
+    //rellenamos la matriz de su puta madre con valores para probar
 
+    for (int i = 0; i < tamanyo_mascara; i++) {
+        matriz[i] = new int[tamanyo_mascara];
+    }
+
+    for (int i = 0; i < tamanyo_mascara; i++) {
+        for (int j = 0; j < tamanyo_mascara; j++) {
+            matriz[i][j] = -1;
+        }
+    }
+}
 int main()
 {
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    int** imagen;
+    int imagen[tamanyo_imagen][tamanyo_imagen];
+
+    srand(0);
+
+    generarImagenAleatoria(imagen);
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
     cout << tamanyo_mascara << " " << desviacion_tipica << endl;
 
     int** mascara_filtro = new int* [tamanyo_mascara];
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        mascara_filtro[i] = new int[tamanyo_mascara];
-    }
-
-    //rellenamos la matriz de su puta madre con valores para probar
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            mascara_filtro[i][j] = 0;
-
-        }
-    }
-
-
-   
+    rellenarMatriz(mascara_filtro, tamanyo_mascara);
 
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            cout << mascara_filtro[i][j] << " ";
-            
+
+    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+
+    for (int i = 0; i < tamanyo_imagen; i++) {
+        for (int j = 0; j < tamanyo_imagen; j++) {
+            if (j != 0) {
+                cout << " ";
+            }
+            cout << imagen[i][j];
         }
         cout << endl;
     }
-    cout << c;
+    cout << endl;
+    /*
+    for (int i = 0; i < tamanyo_mascara; i++) {
+        for (int j = 0; j < tamanyo_mascara; j++) {
+            cout << calcularExponente(tamanyo_mascara, desviacion_tipica, i, j) << ", ";
 
-    aplicarFiltro(mascara_filtro, tamanyo_mascara, desviacion_tipica, mascara_filtro);
-    cout << "acaba proceso" << endl;
+        }
+        cout << endl;
+    }*/
+
+
+
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
     }
