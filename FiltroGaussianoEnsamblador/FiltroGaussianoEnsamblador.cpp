@@ -267,6 +267,7 @@ void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int
 
 
  bucle2:
+        mov ecx, [lim]
         cmp [j],ecx//comparamos si j < limite
         je finbucle2 // si son iguales saltamos al bucle1
         mov [c], 0//inicializamos c = 0
