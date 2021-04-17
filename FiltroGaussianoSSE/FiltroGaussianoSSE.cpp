@@ -58,11 +58,63 @@ void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascar
 
 float calcularC(int tamanyo_mascara, int** mascara) {
     float suma = 0;
-    for (unsigned i = 0; i < tamanyo_mascara; i++) {
-        for (unsigned j = 0; j < tamanyo_mascara; j++) {
-            suma += mascara[i][j];
+    int maxCoger = 4;
+
+    if (tamanyo_mascara < 4) maxCoger = tamanyo_mascara;
+    unsigned j = 0;
+    if (maxCoger < 4) {
+        //coger de uno en uno hasta maxCoger
+    }
+    else {
+        _asm
+        {
+            //cargamos los 4 primeros
+            mov eax, mascara
+            mov eax, [eax]
+            movups xmm1, dword ptr[eax]
         }
     }
+    
+    j += maxCoger;
+    for (unsigned i = 0; i < tamanyo_mascara; i++) {
+        for (; j < tamanyo_mascara; j++) {
+            if (tamanyo_mascara - j >= maxCoger) {
+                if (maxCoger >= 4) {
+                    _asm {
+                        mov eax, mascara
+                        mov ebx, [i]
+                        imul ebx, 4
+
+                        add eax, ebx // eax = mascara + i * 4
+                        mov ebx, [j]
+                        mov eax, [eax + ebx * 4] // posición actual en eax
+                        movups xmm0, dword ptr[eax] //cargar 4 ints en mmx0
+                        addps xmm1, xmm0
+
+                        //j += maxCoger-1
+                        mov ebx, [maxCoger]
+                        add ebx, [j]
+                        dec ebx
+                        mov [j], ebx
+                        
+                    }
+                }
+                
+            }
+            else j = j;//coger uno en mmx0
+        }
+        j = 0;
+    }
+
+    
+    _asm {
+        movshdup    xmm0, xmm1
+        addps       xmm1, xmm0
+        movhlps     xmm0, xmm1
+        addss       xmm1, xmm0
+
+    }
+    
     return suma;
 }
 
@@ -75,7 +127,7 @@ void rellenarMatriz(int** matriz, int tamanyo_mascara) {
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
-            matriz[i][j] = -1;
+            matriz[i][j] = 1;
         }
     }
 }
@@ -84,11 +136,23 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
     int suma = 0;
     int filaFiltro = 0;
     int columnaFiltro = 0;
+
     for (int i = (tamanyo_mascara - 1) / 2; i < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; i++) {
         for (int j = (tamanyo_mascara - 1) / 2; j < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; j++) {
             for (int c = i - ((tamanyo_mascara - 1) / 2); c < (i + ((tamanyo_mascara - 1) / 2)); c++) {
                 for (int k = i - ((tamanyo_mascara - 1) / 2); k < (i + ((tamanyo_mascara - 1) / 2)) - 1; k++) {
+                    __asm {
+                        mov esi, c;
+                        mov edi, k;
+                        mov eax, [imagen];
+                        mov eax, [imagen + esi * 4];
+                        mov eax, [eax + edi * 4];
+                        movups xmm0, dword ptr[eax];
+                        mov ebx, i;
+                        mov ecx, j;
 
+
+                    }
                     suma += imagen[c][k] * mascara_filtro[filaFiltro][columnaFiltro];
                     columnaFiltro++;
                 }
@@ -97,6 +161,7 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
             }
             filaFiltro = 0;
             columnaFiltro = 0;
+            suma = 0;
         }
     }
 }
