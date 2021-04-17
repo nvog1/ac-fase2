@@ -17,4 +17,9 @@
   <ItemGroup>
     <Text Include="BenchmarkConfig3.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FiltroGaussianoSSE.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
