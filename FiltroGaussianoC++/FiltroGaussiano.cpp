@@ -52,6 +52,10 @@ void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascar
             if (i == 0 && j == 0) {
                 smallestCoef = coef;
             }
+            else {
+                //Nothing
+            }
+            mascara[i][j] = coef / smallestCoef;
         }
     }
 }
