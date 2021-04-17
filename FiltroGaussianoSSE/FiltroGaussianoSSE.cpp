@@ -57,7 +57,7 @@ void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascar
 }
 
 float calcularC(int tamanyo_mascara, int** mascara) {
-    float suma = 0;
+    int suma = 0;
     int maxCoger = 4;
 
     if (tamanyo_mascara < 4) maxCoger = tamanyo_mascara;
@@ -112,10 +112,11 @@ float calcularC(int tamanyo_mascara, int** mascara) {
         addps       xmm1, xmm0
         movhlps     xmm0, xmm1
         addss       xmm1, xmm0
-
+        movss word ptr[suma], xmm1
     }
     
-    return suma;
+    float result = suma;
+    return result;
 }
 
 void rellenarMatriz(int** matriz, int tamanyo_mascara) {
@@ -196,7 +197,7 @@ int main()
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
 
-    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    //aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
 
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
