@@ -297,8 +297,8 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
        
         //mov ebx, 4
         mov edi, 0
-        add edi,ecx
-        add edi, ebx//calculamos posición de memoria
+        add edi,ecx 
+        add edi, ebx//sumamos fila y columna
         //imul ecx,ebx//multiplicamos por 4*c
         mov eax,[imagen]//sacamos producto_izquierdo
         mov eax,[eax + 4 * edi]
