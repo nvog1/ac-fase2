@@ -63,7 +63,20 @@ float calcularC(int tamanyo_mascara, int** mascara) {
     if (tamanyo_mascara < 4) maxCoger = tamanyo_mascara;
     unsigned j = 0;
     if (maxCoger < 4) {
-        //coger de uno en uno hasta maxCoger
+        for (int i = 0; i < maxCoger; i++) {
+            _asm {
+                mov eax, mascara
+                mov ebx, [i]
+                imul ebx, 4
+                add eax, ebx // eax = mascara + i * 4
+                mov eax, [eax]
+                mov ebx, [j]
+                mov eax, [eax + ebx * 4] // posición actual en eax
+                add[suma], eax //sumo el valor de la posición actual 
+                inc[j]
+            }
+            
+        }
     }
     else {
         _asm
@@ -84,7 +97,6 @@ float calcularC(int tamanyo_mascara, int** mascara) {
                         mov eax, mascara
                         mov ebx, [i]
                         imul ebx, 4
-
                         add eax, ebx // eax = mascara + i * 4
                         mov ebx, [j]
                         mov eax, [eax + ebx * 4] // posición actual en eax
@@ -101,7 +113,20 @@ float calcularC(int tamanyo_mascara, int** mascara) {
                 }
                 
             }
-            else j = j;//coger uno en mmx0
+            else {
+                _asm {
+                    mov eax, mascara
+                    mov ebx, [i]
+                    imul ebx, 4
+                    add eax, ebx // eax = mascara + i * 4
+                    mov eax, [eax]
+                    mov ebx, [j]
+                    mov eax, [eax + ebx * 4] // posición actual en eax
+                    add [suma], eax //sumo el valor de la posición actual 
+                    inc [j]
+                }
+                
+            }
         }
         j = 0;
     }
