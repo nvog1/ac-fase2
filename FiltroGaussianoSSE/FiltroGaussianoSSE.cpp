@@ -112,7 +112,7 @@ float calcularC(int tamanyo_mascara, int** mascara) {
         addps       xmm1, xmm0
         movhlps     xmm0, xmm1
         addss       xmm1, xmm0
-        movss word ptr[0], xmm1
+        movss word ptr[aux], xmm1
     }
     suma = suma + aux;
     float result = suma;
