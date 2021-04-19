@@ -12,7 +12,7 @@
 using namespace std;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 20;
+const int tamanyo_imagen = 100;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig3.txt");
@@ -145,46 +145,107 @@ float calcularC(int tamanyo_mascara, int** mascara) {
 }
 
 void rellenarMatriz(int** matriz, int tamanyo_mascara) {
-    //rellenamos la matriz de su puta madre con valores para probar
-
+    //rellenamos la matriz con valores para probar
+    int contador = 0;
     for (int i = 0; i < tamanyo_mascara; i++) {
         matriz[i] = new int[tamanyo_mascara];
     }
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
-            matriz[i][j] = 1;
+            
+            matriz[i][j] = contador;
+            contador++;
         }
     }
 }
 
 void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
+    int sumaTotal = 0;
     int filaFiltro = 0;
     int columnaFiltro = 0;
+    int columnaImagen;
+    int columna;
+    int numeroEnteros = pow(tamanyo_mascara, 2);
 
     for (int i = (tamanyo_mascara - 1) / 2; i < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; i++) {
         for (int j = (tamanyo_mascara - 1) / 2; j < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; j++) {
             for (int c = i - ((tamanyo_mascara - 1) / 2); c < (i + ((tamanyo_mascara - 1) / 2)); c++) {
                 for (int k = i - ((tamanyo_mascara - 1) / 2); k < (i + ((tamanyo_mascara - 1) / 2)) - 1; k++) {
-                    __asm {
-                        mov esi, c;
-                        mov edi, k;
-                        mov eax, [imagen];
-                        mov eax, [imagen + esi * 4];
-                        mov eax, [eax + edi * 4];
-                        movups xmm0, dword ptr[eax];
-                        mov ebx, i;
-                        mov ecx, j;
+                    columnaImagen = k + c * tamanyo_mascara - c;
+                    columna = columnaFiltro + filaFiltro * tamanyo_mascara - filaFiltro;
+                    if(numeroEnteros >= 4){
+                        _asm {
+                            mov esi, c; //guardo las filas de la imagen
+                            mov edi, columnaImagen; //guardo la columna de la imagen
+                            mov ebx, imagen; //Guardo la direccion de memoria de la imagen
+                            imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
+                            imul edi, 4; //Guardo la cantidad de bytes que hay hasta la columna
+                            add ebx, esi; //Añado la cantidad de bytes a la direccion de imagen para la fila
+                            add ebx, edi; //Añado la cantidad de bytes a la direccion de imagen para la columna
+                            //mov ebx, [ebx + edi * 4];
+                            movups xmm0, dword ptr[ebx]; //Guardo 4 enteros de la imagen
 
+                            mov esi, filaFiltro; //guardo las filas del filtro
+                            mov edi, columna; //guardo la columna del filtro
+                            mov ebx, mascara_filtro; //Guardo la direccion de memoria del filtro
+                            imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
+                            add ebx, esi; //Añado la cantidad de bytes a la direccion del filtro para la fila
+                            mov ebx, [ebx + edi * 4]; //Añado la cantidad de bytes a la direccion del filtro para la columna
+                            movups xmm1, dword ptr[ebx]; //Guardo 4 enteros del filtro
 
+                            pmulld xmm1, xmm0; //multiplicamos los 4 números de la imagen y los 4 números del filtro 
+
+                            movshdup    xmm0, xmm1;
+                            addps       xmm1, xmm0;
+                            movhlps     xmm0, xmm1;
+                            addss       xmm1, xmm0;
+                            movss word ptr[suma], xmm1;
+                            mov ecx, sumaTotal;
+                            add ecx, suma;
+                            mov[sumaTotal], ecx;
+                            mov ecx, tamanyo_mascara;
+                            add[k], ecx;
+                        }
+                        if (k >= tamanyo_mascara) {
+                            k -= tamanyo_mascara;
+                            c++;
+                        }
+
+                        numeroEnteros -= 4;
                     }
-                    suma += imagen[c][k] * mascara_filtro[filaFiltro][columnaFiltro];
+                    else {
+                        _asm {
+                            mov esi, c; //guardo las filas de la imagen
+                            mov edi, columnaImagen; //guardo la columna de la imagen
+                            mov ebx, imagen; //Guardo la direccion de memoria de la imagen
+                            imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
+                            imul edi, 4; //Guardo la cantidad de bytes que hay hasta la columna
+                            add ebx, esi; //Añado la cantidad de bytes a la direccion de imagen para la fila
+                            add ebx, edi; //Añado la cantidad de bytes a la direccion de imagen para la columna
+                            mov eax, [ebx];
+                            
+
+                            mov esi, filaFiltro; //guardo las filas del filtro
+                            mov edi, columna; //guardo la columna del filtro
+                            mov ebx, mascara_filtro; //Guardo la direccion de memoria del filtro
+                            imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
+                            add ebx, esi; //Añado la cantidad de bytes a la direccion del filtro para la fila
+                            mov ebx, [ebx + edi * 4]; //Añado la cantidad de bytes a la direccion del filtro para la columna
+                            mul ebx;
+
+                            add [sumaTotal], eax //sumo el valor de la posición actual 
+                        }
+                        numeroEnteros--;
+                    }
+                    //suma += imagen[c][k] * mascara_filtro[filaFiltro][columnaFiltro];
                     columnaFiltro++;
                 }
                 columnaFiltro = 0;
                 filaFiltro++;
             }
+            numeroEnteros = pow(tamanyo_mascara, 2);
             filaFiltro = 0;
             columnaFiltro = 0;
             suma = 0;
@@ -222,7 +283,7 @@ int main()
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
 
-    //aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
 
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
