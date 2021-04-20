@@ -24,6 +24,14 @@
   <ItemGroup>
     <Text Include="BenchmarkConfig.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FiltroGaussianoEnsamblador\FiltroGaussianoEnsamblador.vcxproj">
+      <Project>{a3d1b212-5608-4d61-9ee0-8f334b99dd73}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FiltroGaussianoSSE\FiltroGaussianoSSE.vcxproj">
+      <Project>{d18a7546-2727-4ecc-a89f-fcce5a7eb1cd}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

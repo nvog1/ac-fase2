@@ -15,7 +15,7 @@ using namespace std;
 using namespace chrono;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 1000;
+const int tamanyo_imagen = 20;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig3.txt");
@@ -260,7 +260,8 @@ void rellenarMatriz(int** matriz, int tamanyo_mascara) {
 }
 
 
-void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+
+void aplicarFiltro(int **imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int sumaTotal = 0;
     int filaFiltro = 0;
@@ -368,7 +369,7 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    int **imagen = new int* [tamanyo_imagen];
+    int** imagen= new int* [tamanyo_imagen];
 
 
     srand(time(NULL));
@@ -381,11 +382,20 @@ int main()
     rellenarMatriz(mascara_filtro, tamanyo_mascara);
     rellenarMatriz(imagen, tamanyo_imagen);
 
+
     generarImagenAleatoria(imagen);
 
-    clock_t inicio = clock();
+    
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    for (int i = 0; i < tamanyo_mascara; i++) {
+        for (int j = 0; j < tamanyo_mascara; j++) {
+            cout << mascara_filtro[i][j] << ", ";
+
+        }
+        cout << endl;
+    }
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+    clock_t inicio = clock();
     aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
     clock_t fin = clock();
     cout << (double(fin - inicio) / ((clock_t)1000)) << endl;

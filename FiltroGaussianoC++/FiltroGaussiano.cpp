@@ -12,7 +12,7 @@
 using namespace std;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 1000;
+const int tamanyo_imagen = 5000;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig.txt");
@@ -84,7 +84,7 @@ void rellenarMatriz(int** matriz,int tamanyo_mascara) {
     }
 }
 
-void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+void aplicarFiltro(int **imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int filaFiltro = 0;
     int columnaFiltro = 0;
@@ -134,11 +134,13 @@ int main()
     int** mascara_filtro = new int* [tamanyo_mascara];
     rellenarMatriz(mascara_filtro,tamanyo_mascara);
     rellenarMatriz(imagen, tamanyo_imagen);
+
     generarImagenAleatoria(imagen);
 
-    clock_t inicio = clock();
+    
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+    clock_t inicio = clock();
     aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
     clock_t fin = clock();
     cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
