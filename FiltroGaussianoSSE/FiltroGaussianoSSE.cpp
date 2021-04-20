@@ -197,8 +197,11 @@ float calcularC(int tamanyo_mascara, int** mascara) {
                         mov ebx, [i]
                         imul ebx, 4
                         add eax, ebx // eax = mascara + i * 4
+                        mov eax, [eax]
                         mov ebx, [j]
-                        mov eax, [eax + ebx * 4] // posición actual en eax
+                        imul ebx,4
+                        add eax, ebx
+                        //mov eax, [eax + ebx * 4] // posición actual en eax
                         movups xmm0, dword ptr[eax] //cargar 4 ints en mmx0
                         addps xmm1, xmm0
 
