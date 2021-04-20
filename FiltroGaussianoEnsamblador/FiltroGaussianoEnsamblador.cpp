@@ -9,7 +9,7 @@
 
 using namespace std;
 const float e = 2.71828182;
-const int tamanyo_imagen = 20;
+const int tamanyo_imagen = 500;
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
@@ -339,7 +339,6 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
        
 
     }
-    cout << endl <<  suma << endl;
 }
 void generarImagenAleatoria(int imagen[tamanyo_imagen][tamanyo_imagen]) {
     int num;
@@ -369,22 +368,28 @@ int main()
     float desviacion_tipica;
     float c;
     int imagen[tamanyo_imagen][tamanyo_imagen];
-
+    
     srand(0);
 
     generarImagenAleatoria(imagen);
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
-    cout << tamanyo_mascara << " " << desviacion_tipica << endl;
 
     int** mascara_filtro = new int* [tamanyo_mascara];
     rellenarMatriz(mascara_filtro, tamanyo_mascara);
-
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+    clock_t inicio = clock();
+    for (int i = 0; i < 5; i++) {
 
-    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
 
+        aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    }
+    clock_t fin = clock();
+
+
+    cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
+    /*
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
             if (j != 0) {
@@ -394,7 +399,7 @@ int main()
         }
         cout << endl;
     }
-    cout << endl;
+    cout << endl;*/
     /*
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {

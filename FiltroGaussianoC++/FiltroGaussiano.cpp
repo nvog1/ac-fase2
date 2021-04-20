@@ -8,11 +8,10 @@
 #include <fstream>
 #include <time.h>
 
-
 using namespace std;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 20;
+const int tamanyo_imagen = 400;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig.txt");
@@ -135,9 +134,17 @@ int main()
 
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+    clock_t inicio = clock();
+    for (int i = 0; i < 5; i++) {
+        
 
-    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+        aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    }
+    clock_t fin = clock();
 
+
+    cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
+    /*
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
             if (j != 0) {

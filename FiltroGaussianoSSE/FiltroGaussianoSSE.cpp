@@ -4,15 +4,17 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctime>
+//#include <ctime>
 #include <fstream>
 #include <time.h>
+#include <chrono>
 
 
 using namespace std;
+using namespace chrono;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 100;
+const int tamanyo_imagen = 500;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig3.txt");
@@ -52,6 +54,10 @@ void generadorMascara(int tamanyo_mascara, float desviacion_tipica, int** mascar
             if (i == 0 && j == 0) {
                 smallestCoef = coef;
             }
+            else {
+                //Nothing
+            }
+            mascara[i][j] = coef / smallestCoef;
         }
     }
 }
@@ -159,6 +165,7 @@ void rellenarMatriz(int** matriz, int tamanyo_mascara) {
         }
     }
 }
+
 
 void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
@@ -279,22 +286,30 @@ int main()
 
     int** mascara_filtro = new int* [tamanyo_mascara];
     rellenarMatriz(mascara_filtro, tamanyo_mascara);
-
+ 
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+    clock_t inicio = clock();
+    for (int i = 0; i < 5; i++) {
 
-    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
 
-    for (int i = 0; i < tamanyo_imagen; i++) {
-        for (int j = 0; j < tamanyo_imagen; j++) {
-            if (j != 0) {
-                cout << " ";
-            }
-            cout << imagen[i][j];
-        }
-        cout << endl;
+        aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
     }
-    cout << endl;
+    clock_t fin = clock();
+
+
+    cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
+
+    //for (int i = 0; i < tamanyo_imagen; i++) {
+        //for (int j = 0; j < tamanyo_imagen; j++) {
+            //if (j != 0) {
+              //  cout << " ";
+            //}
+          //  cout << imagen[i][j];
+        //}
+      //  cout << endl;
+    //}
+    //cout << endl;
     /*
     for (int i = 0; i < tamanyo_mascara; i++) {
         for (int j = 0; j < tamanyo_mascara; j++) {
