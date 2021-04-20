@@ -15,7 +15,7 @@ using namespace std;
 using namespace chrono;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 2000;
+const int tamanyo_imagen = 1000;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig3.txt");
@@ -260,7 +260,7 @@ void rellenarMatriz(int** matriz, int tamanyo_mascara) {
 }
 
 
-void aplicarFiltro(vector <vector <int> >imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int sumaTotal = 0;
     int filaFiltro = 0;
@@ -321,9 +321,9 @@ void aplicarFiltro(vector <vector <int> >imagen, int tamanyo_mascara, int desvia
                             mov edi, columnaImagen; //guardo la columna de la imagen
                             mov ebx, imagen; //Guardo la direccion de memoria de la imagen
                             imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
-                            imul edi, 4; //Guardo la cantidad de bytes que hay hasta la columna
+                            //imul edi, 4; //Guardo la cantidad de bytes que hay hasta la columna
                             add ebx, esi; //Añado la cantidad de bytes a la direccion de imagen para la fila
-                            add ebx, edi; //Añado la cantidad de bytes a la direccion de imagen para la columna
+                            mov ebx, [ebx + edi * 4]; //Añado la cantidad de bytes a la direccion de imagen para la columna
                             mov eax, [ebx];
                             
 
@@ -353,7 +353,7 @@ void aplicarFiltro(vector <vector <int> >imagen, int tamanyo_mascara, int desvia
     }
 }
 
-void generarImagenAleatoria(vector <vector <int> >imagen) {
+void generarImagenAleatoria(int** imagen) {
     int num;
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
@@ -368,17 +368,21 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    vector <vector <int> >imagen(tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
+    int **imagen = new int* [tamanyo_imagen];
+
 
     srand(time(NULL));
-
-    generarImagenAleatoria(imagen);
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
     cout << tamanyo_mascara << " " << desviacion_tipica << endl;
 
     int** mascara_filtro = new int* [tamanyo_mascara];
+
     rellenarMatriz(mascara_filtro, tamanyo_mascara);
+    rellenarMatriz(imagen, tamanyo_imagen);
+
+    generarImagenAleatoria(imagen);
+
     clock_t inicio = clock();
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);

@@ -12,7 +12,7 @@
 using namespace std;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 2000;
+const int tamanyo_imagen = 1000;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig.txt");
@@ -71,7 +71,7 @@ float calcularC(int tamanyo_mascara, int** mascara) {
 }
 
 void rellenarMatriz(int** matriz,int tamanyo_mascara) {
-    //rellenamos la matriz de su puta madre con valores para probar
+    //rellenamos la matriz con valores para probar
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         matriz[i] = new int[tamanyo_mascara];
@@ -84,7 +84,7 @@ void rellenarMatriz(int** matriz,int tamanyo_mascara) {
     }
 }
 
-void aplicarFiltro(/*int imagen[tamanyo_imagen][tamanyo_imagen]*/vector <vector <int> >imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int filaFiltro = 0;
     int columnaFiltro = 0;
@@ -106,7 +106,7 @@ void aplicarFiltro(/*int imagen[tamanyo_imagen][tamanyo_imagen]*/vector <vector 
     }
 }
 
-void generarImagenAleatoria(vector <vector <int> > imagen/*int imagen[tamanyo_imagen][tamanyo_imagen]*/) {
+void generarImagenAleatoria(int** imagen) {
     int num;
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
@@ -121,17 +121,20 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    vector <vector <int> >imagen (tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
+    //vector <vector <int> >imagen (tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
+    int** imagen = new int* [tamanyo_imagen];
 
     srand(time(NULL));
 
-    generarImagenAleatoria(imagen);
+    
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
     cout << tamanyo_mascara << " " << desviacion_tipica << endl;
 
     int** mascara_filtro = new int* [tamanyo_mascara];
     rellenarMatriz(mascara_filtro,tamanyo_mascara);
+    rellenarMatriz(imagen, tamanyo_imagen);
+    generarImagenAleatoria(imagen);
 
     clock_t inicio = clock();
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);

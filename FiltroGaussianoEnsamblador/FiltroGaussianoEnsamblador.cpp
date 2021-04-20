@@ -10,7 +10,7 @@
 
 using namespace std;
 const float e = 2.71828182;
-const int tamanyo_imagen = 2000;
+const int tamanyo_imagen = 1000;
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
@@ -225,7 +225,7 @@ int calcularC(int tam_mascara, int** mascara_filtro) {
     return variable;
 }
 
-void aplicarFiltro(vector <vector <int> >imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int producto_izq;
     int producto_dch;
@@ -289,19 +289,20 @@ void aplicarFiltro(vector <vector <int> >imagen, int tamanyo_mascara, int desvia
         jmp bucle4
 
  bucle4:
-        cmp[k],edx
+        cmp[k], edx
         je finbucle4
-        mov ecx,[c]//cargamos c
-        mov ebx,[k]//cargamos k
+        mov ecx, [c]//cargamos c
+        mov ebx, [k]//cargamos k
         //mov eax,[ini]//cargamos (tamanyo-1)/2
-        
-       
+
+
         //mov ebx, 4
         mov edi, 0
-        add edi,ecx 
+        add edi, ecx
         add edi, ebx//sumamos fila y columna
         //imul ecx,ebx//multiplicamos por 4*c
-        mov eax,[imagen]//sacamos producto_izquierdo
+        mov eax, [imagen]//sacamos producto_izquierdo
+        mov eax, [eax]
         mov eax,[eax + 4 * edi]
        //mov ebx,[mascara_filtro+ecx]//sacamos producto_derecho
         mov edi,[filafiltro]
@@ -341,7 +342,7 @@ void aplicarFiltro(vector <vector <int> >imagen, int tamanyo_mascara, int desvia
 
     }
 }
-void generarImagenAleatoria(vector <vector <int> >imagen) {
+void generarImagenAleatoria(int** imagen) {
     int num;
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
@@ -368,16 +369,21 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    vector <vector <int> >imagen(tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
+    //vector <vector <int> >imagen(tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
+    int** imagen = new int* [tamanyo_imagen];
+    
     
     srand(0);
 
-    generarImagenAleatoria(imagen);
+    
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
 
     int** mascara_filtro = new int* [tamanyo_mascara];
+    rellenarMatriz(imagen, tamanyo_imagen);
     rellenarMatriz(mascara_filtro, tamanyo_mascara);
+    generarImagenAleatoria(imagen);
+
     clock_t inicio = clock();
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     
