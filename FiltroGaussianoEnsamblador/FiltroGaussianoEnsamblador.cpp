@@ -6,10 +6,11 @@
 #include <stdlib.h>
 #include <ctime>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 const float e = 2.71828182;
-const int tamanyo_imagen = 500;
+const int tamanyo_imagen = 2000;
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
@@ -224,7 +225,7 @@ int calcularC(int tam_mascara, int** mascara_filtro) {
     return variable;
 }
 
-void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+void aplicarFiltro(vector <vector <int> >imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int producto_izq;
     int producto_dch;
@@ -340,7 +341,7 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
 
     }
 }
-void generarImagenAleatoria(int imagen[tamanyo_imagen][tamanyo_imagen]) {
+void generarImagenAleatoria(vector <vector <int> >imagen) {
     int num;
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
@@ -350,7 +351,7 @@ void generarImagenAleatoria(int imagen[tamanyo_imagen][tamanyo_imagen]) {
     }
 }
 void rellenarMatriz(int** matriz, int tamanyo_mascara) {
-    //rellenamos la matriz de su puta madre con valores para probar
+    //rellenamos la matriz con valores para probar
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         matriz[i] = new int[tamanyo_mascara];
@@ -367,7 +368,7 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    int imagen[tamanyo_imagen][tamanyo_imagen];
+    vector <vector <int> >imagen(tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
     
     srand(0);
 
@@ -377,15 +378,13 @@ int main()
 
     int** mascara_filtro = new int* [tamanyo_mascara];
     rellenarMatriz(mascara_filtro, tamanyo_mascara);
-    generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
-    c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
     clock_t inicio = clock();
-    for (int i = 0; i < 5; i++) {
-
-
-        aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
-    }
+    generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    
+    c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
     clock_t fin = clock();
+    cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
 
 
     cout << (double(fin - inicio) / ((clock_t)1000)) << endl;

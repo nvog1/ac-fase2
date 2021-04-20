@@ -7,11 +7,12 @@
 #include <ctime>
 #include <fstream>
 #include <time.h>
+#include <vector>
 
 using namespace std;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 400;
+const int tamanyo_imagen = 2000;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig.txt");
@@ -83,7 +84,7 @@ void rellenarMatriz(int** matriz,int tamanyo_mascara) {
     }
 }
 
-void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+void aplicarFiltro(/*int imagen[tamanyo_imagen][tamanyo_imagen]*/vector <vector <int> >imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int filaFiltro = 0;
     int columnaFiltro = 0;
@@ -105,7 +106,7 @@ void aplicarFiltro(int imagen[tamanyo_imagen][tamanyo_imagen], int tamanyo_masca
     }
 }
 
-void generarImagenAleatoria(int imagen[tamanyo_imagen][tamanyo_imagen]) {
+void generarImagenAleatoria(vector <vector <int> > imagen/*int imagen[tamanyo_imagen][tamanyo_imagen]*/) {
     int num;
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
@@ -120,7 +121,7 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    int imagen[tamanyo_imagen][tamanyo_imagen];
+    vector <vector <int> >imagen (tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
 
     srand(time(NULL));
 
@@ -132,18 +133,13 @@ int main()
     int** mascara_filtro = new int* [tamanyo_mascara];
     rellenarMatriz(mascara_filtro,tamanyo_mascara);
 
+    clock_t inicio = clock();
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
-    clock_t inicio = clock();
-    for (int i = 0; i < 5; i++) {
-        
-
-        aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
-    }
+    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
     clock_t fin = clock();
-
-
     cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
+
     /*
     for (int i = 0; i < tamanyo_imagen; i++) {
         for (int j = 0; j < tamanyo_imagen; j++) {
@@ -163,8 +159,6 @@ int main()
         }
         cout << endl;
     }*/
-
-    
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
