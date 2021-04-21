@@ -378,28 +378,27 @@ int main()
     float c;
     int** imagen= new int* [tamanyo_imagen];
 
-
     srand(time(NULL));
 
     leerFichero(tamanyo_mascara, desviacion_tipica);
-    cout << tamanyo_mascara << " " << desviacion_tipica << endl;
 
     int** mascara_filtro = new int* [tamanyo_mascara];
 
     rellenarMatriz(mascara_filtro, tamanyo_mascara);
     rellenarMatriz(imagen, tamanyo_imagen);
-
-
     generarImagenAleatoria(imagen);
 
-    generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
-    
-    c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
-
     clock_t inicio = clock();
-    aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    for (int i = 0; i < 10; i++) {
+        generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
+        c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+        aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
+    }
     clock_t fin = clock();
-    cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
+    float media = (double(fin - inicio) / ((clock_t)1000));
+    media /= 10;
+
+    cout << media << endl;
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
