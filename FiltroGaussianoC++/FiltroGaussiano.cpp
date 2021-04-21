@@ -88,10 +88,10 @@ void aplicarFiltro(int **imagen, int tamanyo_mascara, int desviacion_tipica, int
     int suma = 0;
     int filaFiltro = 0;
     int columnaFiltro = 0;
-    for (int i = (tamanyo_mascara - 1) / 2; i < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; i++) {
-        for (int j = (tamanyo_mascara - 1) / 2; j < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; j++) {
-            for (int c = i - ((tamanyo_mascara - 1) / 2); c < (i + ((tamanyo_mascara - 1) / 2)); c++) {
-                for (int k = i - ((tamanyo_mascara - 1) / 2); k < (i + ((tamanyo_mascara - 1) / 2)) - 1; k++) {
+    for (int i = (tamanyo_mascara - 1) / 2; i < tamanyo_imagen - (tamanyo_mascara - 1) / 2; i++) {
+        for (int j = (tamanyo_mascara - 1) / 2; j < tamanyo_imagen - (tamanyo_mascara - 1) / 2; j++) {
+            for (int c = i - ((tamanyo_mascara - 1) / 2); c < (i + ((tamanyo_mascara - 1) / 2)+1); c++) {
+                for (int k = j - ((tamanyo_mascara - 1) / 2); k < (j + ((tamanyo_mascara - 1) / 2)) +1; k++) {
 
                     suma += imagen[c][k] * mascara_filtro[filaFiltro][columnaFiltro];
                     columnaFiltro++;
@@ -121,7 +121,7 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    //vector <vector <int> >imagen (tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
+
     int** imagen = new int* [tamanyo_imagen];
 
     srand(time(NULL));
@@ -145,31 +145,17 @@ int main()
     clock_t fin = clock();
     cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
 
-    /*
-    for (int i = 0; i < tamanyo_imagen; i++) {
-        for (int j = 0; j < tamanyo_imagen; j++) {
-            if (j != 0) {
-                cout << " ";
-            }
-            cout << imagen[i][j] ;
-        }
-        cout << endl;
-    }
-    cout << endl;
-    /*
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            cout << calcularExponente(tamanyo_mascara, desviacion_tipica, i, j) << ", ";
-
-        }
-        cout << endl;
-    }*/
-
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
     }
 
     delete[] mascara_filtro;
+
+    for (int i = 0; i < tamanyo_imagen; i++) {
+        delete[] imagen[i];
+    }
+
+    delete[] imagen;
 }
 
 

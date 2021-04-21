@@ -15,7 +15,7 @@ using namespace std;
 using namespace chrono;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 20;
+const int tamanyo_imagen = 5000;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig3.txt");
@@ -263,40 +263,43 @@ void rellenarMatriz(int** matriz, int tamanyo_mascara) {
 }
 
 
-
-void aplicarFiltro(int **imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
+//Tengo que comprobar por cada fila si aun quedan gurpos de 4 posibles y si no tengo que hacer la operacion 1 a 1 y sumarlos
+void aplicarFiltro(int** imagen, int tamanyo_mascara, int desviacion_tipica, int** mascara_filtro) {
     int suma = 0;
     int sumaTotal = 0;
     int filaFiltro = 0;
     int columnaFiltro = 0;
-    int columnaImagen;
-    int columna;
-    int numeroEnteros = pow(tamanyo_mascara, 2);
+    int numeroEnterosFila = tamanyo_mascara;
 
-    for (int i = (tamanyo_mascara - 1) / 2; i < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; i++) {
-        for (int j = (tamanyo_mascara - 1) / 2; j < (tamanyo_imagen - 1) - (tamanyo_mascara - 1) / 2; j++) {
-            for (int c = i - ((tamanyo_mascara - 1) / 2); c < (i + ((tamanyo_mascara - 1) / 2)); c++) {
-                for (int k = i - ((tamanyo_mascara - 1) / 2); k < (i + ((tamanyo_mascara - 1) / 2)) - 1; k++) {
-                    columnaImagen = k + c * tamanyo_mascara - c;
-                    columna = columnaFiltro + filaFiltro * tamanyo_mascara - filaFiltro;
-                    if(numeroEnteros >= 4){
+    for (int i = (tamanyo_mascara - 1) / 2; i < tamanyo_imagen - (tamanyo_mascara - 1) / 2; i++) {
+        for (int j = (tamanyo_mascara - 1) / 2; j < tamanyo_imagen - (tamanyo_mascara - 1) / 2; j++) {
+            for (int c = i - ((tamanyo_mascara - 1) / 2); c < (i + ((tamanyo_mascara - 1) / 2)+1); c++) {
+                numeroEnterosFila = tamanyo_mascara;
+                int k = j - ((tamanyo_mascara - 1) / 2);
+                while(k < (j + ((tamanyo_mascara - 1) / 2)+1)) {
+                    int ini = (i + tamanyo_mascara);
+                    int fin = (j + tamanyo_mascara);
+
+                    if (numeroEnterosFila >= 4) {
                         _asm {
                             mov esi, c; //guardo las filas de la imagen
-                            mov edi, columnaImagen; //guardo la columna de la imagen
+                            mov edi, k; //guardo la columna de la imagen
                             mov ebx, imagen; //Guardo la direccion de memoria de la imagen
                             imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
                             imul edi, 4; //Guardo la cantidad de bytes que hay hasta la columna
                             add ebx, esi; //Añado la cantidad de bytes a la direccion de imagen para la fila
+                            mov ebx, [ebx];
                             add ebx, edi; //Añado la cantidad de bytes a la direccion de imagen para la columna
-                            //mov ebx, [ebx + edi * 4];
                             movups xmm0, dword ptr[ebx]; //Guardo 4 enteros de la imagen
 
                             mov esi, filaFiltro; //guardo las filas del filtro
-                            mov edi, columna; //guardo la columna del filtro
+                            mov edi, k; //guardo la columna del filtro
                             mov ebx, mascara_filtro; //Guardo la direccion de memoria del filtro
                             imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
+                            imul edi, 4;
                             add ebx, esi; //Añado la cantidad de bytes a la direccion del filtro para la fila
-                            mov ebx, [ebx + edi * 4]; //Añado la cantidad de bytes a la direccion del filtro para la columna
+                            mov ebx, [ebx];
+                            add ebx, edi; //Añado la cantidad de bytes a la direccion del filtro para la columna
                             movups xmm1, dword ptr[ebx]; //Guardo 4 enteros del filtro
 
                             pmulld xmm1, xmm0; //multiplicamos los 4 números de la imagen y los 4 números del filtro 
@@ -309,47 +312,48 @@ void aplicarFiltro(int **imagen, int tamanyo_mascara, int desviacion_tipica, int
                             mov ecx, sumaTotal;
                             add ecx, suma;
                             mov[sumaTotal], ecx;
-                            mov ecx, tamanyo_mascara;
+                            mov ecx, 4;
                             add[k], ecx;
                         }
-                        if (k >= tamanyo_mascara) {
-                            k -= tamanyo_mascara;
-                            c++;
-                        }
-
-                        numeroEnteros -= 4;
+                        numeroEnterosFila -= 4;
+                        columnaFiltro += 4;
                     }
                     else {
                         _asm {
                             mov esi, c; //guardo las filas de la imagen
-                            mov edi, columnaImagen; //guardo la columna de la imagen
+                            mov edi, k; //guardo la columna de la imagen
                             mov ebx, imagen; //Guardo la direccion de memoria de la imagen
                             imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
-                            //imul edi, 4; //Guardo la cantidad de bytes que hay hasta la columna
+                            imul edi, 4; //Guardo la cantidad de bytes que hay hasta la columna
                             add ebx, esi; //Añado la cantidad de bytes a la direccion de imagen para la fila
-                            mov ebx, [ebx + edi * 4]; //Añado la cantidad de bytes a la direccion de imagen para la columna
-                            mov eax, [ebx];
-                            
+                            mov ebx, [ebx];
+                            add ebx, edi;
+                            //mov ebx, [ebx]; //Añado la cantidad de bytes a la direccion de imagen para la columna
+                            mov ecx, [ebx];
+
 
                             mov esi, filaFiltro; //guardo las filas del filtro
-                            mov edi, columna; //guardo la columna del filtro
+                            mov edi, k; //guardo la columna del filtro
                             mov ebx, mascara_filtro; //Guardo la direccion de memoria del filtro
                             imul esi, 4; //Guardo la cantidad de bytes que hay hasta la fila
+                            imul edi, 4;
                             add ebx, esi; //Añado la cantidad de bytes a la direccion del filtro para la fila
-                            mov ebx, [ebx + edi * 4]; //Añado la cantidad de bytes a la direccion del filtro para la columna
+                            mov ebx, [ebx];
+                            add ebx, edi;
+                            mov ebx, [ebx]; //Añado la cantidad de bytes a la direccion del filtro para la columna
+                            mov eax, ecx;
                             mul ebx;
 
-                            add [sumaTotal], eax //sumo el valor de la posición actual 
+                            add[sumaTotal], eax; //sumo el valor de la posición actual 
+                            inc[k];
                         }
-                        numeroEnteros--;
+                        numeroEnterosFila--;
+                        columnaFiltro++;
                     }
-                    //suma += imagen[c][k] * mascara_filtro[filaFiltro][columnaFiltro];
-                    columnaFiltro++;
                 }
                 columnaFiltro = 0;
                 filaFiltro++;
             }
-            numeroEnteros = pow(tamanyo_mascara, 2);
             filaFiltro = 0;
             columnaFiltro = 0;
             suma = 0;
@@ -388,45 +392,24 @@ int main()
 
     generarImagenAleatoria(imagen);
 
-    
     generadorMascara(tamanyo_mascara, desviacion_tipica, mascara_filtro);
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            cout << mascara_filtro[i][j] << ", ";
-
-        }
-        cout << endl;
-    }
+    
     c = 1 / calcularC(tamanyo_mascara, mascara_filtro);
+
     clock_t inicio = clock();
     aplicarFiltro(imagen, tamanyo_mascara, desviacion_tipica, mascara_filtro);
     clock_t fin = clock();
     cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
-
-    //for (int i = 0; i < tamanyo_imagen; i++) {
-        //for (int j = 0; j < tamanyo_imagen; j++) {
-            //if (j != 0) {
-              //  cout << " ";
-            //}
-          //  cout << imagen[i][j];
-        //}
-      //  cout << endl;
-    //}
-    //cout << endl;
-    /*
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            cout << calcularExponente(tamanyo_mascara, desviacion_tipica, i, j) << ", ";
-
-        }
-        cout << endl;
-    }*/
-
-
 
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
     }
 
     delete[] mascara_filtro;
+
+    for (int i = 0; i < tamanyo_imagen; i++) {
+        delete[] imagen[i];
+    }
+
+    delete[] imagen;
 }

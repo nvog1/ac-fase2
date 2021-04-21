@@ -369,7 +369,7 @@ int main()
     int tamanyo_mascara;
     float desviacion_tipica;
     float c;
-    //vector <vector <int> >imagen(tamanyo_imagen, vector<int>(tamanyo_imagen, 0));
+    
     int** imagen = new int* [tamanyo_imagen];
     
     
@@ -394,35 +394,16 @@ int main()
     clock_t fin = clock();
     cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
 
-
-    cout << (double(fin - inicio) / ((clock_t)1000)) << endl;
-    /*
-    for (int i = 0; i < tamanyo_imagen; i++) {
-        for (int j = 0; j < tamanyo_imagen; j++) {
-            if (j != 0) {
-                cout << " ";
-            }
-            cout << imagen[i][j];
-        }
-        cout << endl;
-    }
-    cout << endl;*/
-    /*
-    for (int i = 0; i < tamanyo_mascara; i++) {
-        for (int j = 0; j < tamanyo_mascara; j++) {
-            cout << calcularExponente(tamanyo_mascara, desviacion_tipica, i, j) << ", ";
-
-        }
-        cout << endl;
-    }*/
-
-
-
     for (int i = 0; i < tamanyo_mascara; i++) {
         delete[] mascara_filtro[i];
     }
 
     delete[] mascara_filtro;
+    for (int i = 0; i < tamanyo_imagen; i++) {
+        delete[] imagen[i];
+    }
+
+    delete[] imagen;
 
     
 }
