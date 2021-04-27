@@ -10,7 +10,7 @@
 
 using namespace std;
 const float e = 2.71828182;
-const int tamanyo_imagen = 500;
+//const int tamanyo_imagen = 500;
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig2.txt");
     string s;
@@ -51,8 +51,7 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
         mov ebx, [divisor]
         xor edx,edx
         div ebx // eax = (tamanyo_mascara - 1) / 2 (división entera), edx = resto de la división
-        //add eax, edx //eax = (tamanyo_mascara-1)/2 en float(creo)
-        mov ebx, eax //ebx = (tamanyo_mascara-1)/2 en float(creo)
+        mov ebx, eax //ebx = (tamanyo_mascara-1)/2 
         
         mov eax, [i] //eax = i
         sub eax, ebx //eax = i - (tamanyo_mascara-1)/2
@@ -62,7 +61,7 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
         sub eax, ebx //eax = j - (tamanyo_mascara-1)/2
         mov [j], eax //j = j - (tamanyo_mascara-1)/2
 
-
+        //calculamos i^2 y j^2
         mov eax, [i]
         mov ebx, [i]
         mul ebx //eax = eax*ebx | eax = i^2
@@ -71,21 +70,27 @@ float calcularExponente(float desviacion_tipica, int tamanyo_mascara, int i, int
         mov ebx, [j]
         mul ebx //eax = eax * ebx --> j^2
         mov[j_c], eax //j_c = j^2
+
+        //calculamos 2*desviación_típica^2
         fld[desviacion_tipica] //st(0) = desviacion_tipica
         fmul st(0), st(0) //st(0) = desviacion_tipica^2
         fld[mult] //cargamos 2.0 en st(0) | st(1) = desviacion_tipica^2
         fmul st(0), st(1) //st(0) = 2*desviación_típica^2 | st(1) = desviacion_tipica^2
+
         //sumamos j_c + i_c
         mov eax,[i_c] //eax = i_c
         mov ebx,[j_c] //ebx = j_c
         add eax, ebx //eax = i_c + j_c
         mov [suma], eax //suma = eax
+
         //metemos suma en la pila
         fild [suma] //st(0) = suma | st(1) = 2*desviacion_tipica^2 | st(2) = desviacion_tipica^2
         fdiv st(0),st(1) //st(0) = suma/2*desviacion_tipica^2 | st(1) = 2*desviacion_tipica^2 | st(2) = desviacion_tipica^2
+
         //cargamos -1 para cambiar el signo
         fild [sign] //st(0) = -1.0 | st(1) = suma/2*desviacion_tipica^2 | st(2) = 2*desviacion_tipica^2 | st(3) = desviacion_tipica^2
         fmul st(0),st(1) //st(0) = -1 * suma/2*desviacion_tipica^2 | st(1) = suma/2*desviacion_tipica^2 | st(2) = 2*desviacion_tipica^2 | st(3) = desviacion_tipica^2
+        
         fst[resultado] //guardamos resultado
         fstp st(0) //st(0) = suma / 2 * desviacion_tipica ^ 2 | st(1) = 2 * desviacion_tipica ^ 2 | st(2) = desviacion_tipica ^ 2
         fstp st(1) //st(0) = 2 * desviacion_tipica ^ 2 | st(1) = desviacion_tipica ^ 2

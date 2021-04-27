@@ -15,7 +15,6 @@ using namespace std;
 using namespace chrono;
 
 const float e = 2.71828182;
-const int tamanyo_imagen = 500;
 
 void leerFichero(int& tamanyo_mascara, float& desviacion_tipica) {
     ifstream ficheroLec("BenchmarkConfig3.txt");
