@@ -232,15 +232,16 @@ float calcularC(int tamanyo_mascara, int** mascara) {
         j = 0;
     }
     int aux = 0;
-    
-    _asm {
-        movshdup    xmm0, xmm1
-        addps       xmm1, xmm0
-        movhlps     xmm0, xmm1
-        addss       xmm1, xmm0
-        movss word ptr[aux], xmm1
+    if (maxCoger >= 4) {
+        _asm {
+            movshdup    xmm0, xmm1
+            addps       xmm1, xmm0
+            movhlps     xmm0, xmm1
+            addss       xmm1, xmm0
+            movss word ptr[aux], xmm1
+        }
+        suma = suma + aux;
     }
-    suma = suma + aux;
     float result = suma;
     return result;
 }
